@@ -38,6 +38,11 @@
             "is_secure": "{{getenv "AWS_IS_SECURE"}}",
             {{end}}
             "bucket_name":"{{getenv "AWS_BUCKETNAME"}}"
+	 {{else if eq $storage_type "google"}}
+	    "storage_type": "google",
+	    "project_id": "{{getenv "GCE_PROJECT_ID"}}",
+	    "bucket_name": "{{getenv "GCE_BUCKET_NAME"}}",
+	    "credential_file": "{{getenv "GCE_CREDENTIAL_FILE"}}"
          {{else if eq $storage_type "swift"}}
             "storage_type": "swift",
             "user":"{{getenv "OS_USERNAME"}}",
