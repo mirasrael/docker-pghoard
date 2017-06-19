@@ -47,6 +47,8 @@ RUN curl -L -o /usr/local/bin/confd https://github.com/kelseyhightower/confd/rel
 ENV PGHOARD_VERSION=1.5.0
 RUN pip3 install git+https://github.com/ohmu/pghoard.git@${PGHOARD_VERSION}
 
+RUN pip3 install google-api-python-client 'oauth2client<4'
+
 RUN mkdir /var/lib/pghoard
 RUN chown postgres:postgres /var/lib/pghoard
 

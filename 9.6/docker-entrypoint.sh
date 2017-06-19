@@ -2,6 +2,8 @@
 
 set -e
 
+source /etc/profile
+
 echo "Create pghoard directories..."
 chown -R postgres /home/postgres
 
