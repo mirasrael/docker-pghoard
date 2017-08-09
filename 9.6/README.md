@@ -11,7 +11,7 @@ $ docker run camptocamp/pghoard
 or
 
 ```shell
-$ docker run --entrypoint <command> camptocamp/pghoard
+$ docker run camptocamp/pghoard
 ```
 
 where <command> is one of `pghoard`, `pghoard_archive_sync`, `pghoard_create_keys`, `pghoard_postgres_command` or `pghoard_restore`.
@@ -20,14 +20,14 @@ Launch in backup mode:
 ----------------------
 
 ```shell
-$ docker run -d --entrypoint /backup.sh camptocamp/pghoard
+$ docker run -d camptocamp/pghoard
 ```
 
 Launch in restore mode:
 -----------------------
 
 ```shell
-$ docker run -d -e PGHOARD_RESTORE=SITE=foo --entrypoint /restore.sh camptocamp/pghoard [--recovery-target-time <time>] [--recovery-target-xid <xid>]
+$ docker run -d -e PGHOARD_RESTORE_SITE=foo camptocamp/pghoard [--recovery-target-time <time>] [--recovery-target-xid <xid>]
 ```
 
 Environment variables:
@@ -55,7 +55,7 @@ How often to take a new basebackup of a cluster. The shorter the interval, the f
 
 ## PGHOARD_STORAGE_TYPE
 
-Can be either `local`, `s3` or `swift`.
+Can be either `local`, `s3`, `google` or `swift`.
 
 ## PGHOARD_DIRECTORY
 
