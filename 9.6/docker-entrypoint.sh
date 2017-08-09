@@ -3,6 +3,7 @@
 set -e
 
 source /etc/profile
+export PATH="/usr/lib/postgresql/${PG_MAJOR}/bin:$PATH"
 
 echo "Create pghoard directories..."
 chown -R postgres /home/postgres
