@@ -43,13 +43,13 @@ else
   echo "Get the latest available basebackup ..."
   gosu postgres pghoard_restore get-basebackup --config pghoard_restore.json --site $PGHOARD_RESTORE_SITE --target-dir restore --restore-to-master --recovery-target-action promote --recovery-end-command "pkill pghoard" --overwrite "$@"
 
-  # remove custom server configuration (espacially the hot standby parameter)
+  # remove custom server configuration (especially the hot standby parameter)
   gosu postgres mv restore/postgresql.auto.conf restore/postgresql.auto.conf.backup
 
-  echo "Start the pghoard daemon ..."
-  gosu postgres pghoard --short-log --config /home/postgres/pghoard_restore.json &
-
-  if [ -z "$RESTORE_CHECK_COMMAND" ]; then
+  # If you want to get DB files outside of Docker container you can use mount to /home/postgres/restore_target
+  if [ -d "restore_target" ]; then
+    mv restore/* restore_target/
+  elif [ -z "$RESTORE_CHECK_COMMAND" ]; then
     # Manual mode
     # Just start PostgreSQL
     echo "Start PostgresSQL ..."
