@@ -46,29 +46,23 @@ else
   # remove custom server configuration (especially the hot standby parameter)
   gosu postgres mv restore/postgresql.auto.conf restore/postgresql.auto.conf.backup
 
-  # If you want to get DB files outside of Docker container you can use mount to /home/postgres/restore_target
-  if [ -d "restore_target" ]; then
-    mv restore/* restore_target/
-  elif [ -z "$RESTORE_CHECK_COMMAND" ]; then
-    # Manual mode
-    # Just start PostgreSQL
-    echo "Start PostgresSQL ..."
-    exec gosu postgres postgres -D restore
-  else
+  echo "Start the pghoard daemon ..."
+  gosu postgres pghoard --short-log --config /home/postgres/pghoard_restore.json &
+
+  echo "Start PostgresSQL ..."
+  gosu postgres pg_ctl -D restore start
+
+  # Give postgres some time before starting the harassment
+  sleep 20
+
+  until gosu postgres psql -At -c "SELECT * FROM pg_is_in_recovery()" | grep -q f
+  do
+    sleep 5
+    echo "Waiting for restoration to finish..."
+  done
+
+  if [ -n "$RESTORE_CHECK_COMMAND" ]; then
     # Automatic test mode
-    # Run test commands against PostgreSQL server and exit
-    echo "Start PostgresSQL ..."
-    gosu postgres pg_ctl -D restore start
-
-    # Give postgres some time before starting the harassment
-    sleep 20
-
-    until gosu postgres psql -At -c "SELECT * FROM pg_is_in_recovery()" | grep -q f
-    do
-      sleep 5
-      echo "AutoCheck: waiting for restoration to finish..."
-    done
-
     echo "AutoCheck: running command on db..."
     OUT_LINES=$(gosu postgres psql -c "$RESTORE_CHECK_COMMAND" "$RESTORE_CHECK_DB" | wc -l)
     echo "AutoCheck: $OUT_LINES lines returned"
@@ -86,5 +80,11 @@ else
   check_success ${RES}
 EOF
     fi
+  fi
+
+  # If you want to get DB files outside of Docker container you can use mount to /home/postgres/restore_target
+  if [ -d "restore_target" ]; then
+    gosu postgres pg_ctl -D restore stop
+    mv restore/* restore_target/
   fi
 fi
