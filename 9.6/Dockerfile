@@ -39,12 +39,12 @@ RUN set -x \
     && gosu nobody true
 
 # Install confd
-ENV CONFD_VERSION=0.12.0-alpha3  
+ENV CONFD_VERSION=0.14.0
 RUN curl -L -o /usr/local/bin/confd https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64 \
   && chmod +x /usr/local/bin/confd
 
 # Install pghoard
-ENV PGHOARD_VERSION=1.5.0
+ENV PGHOARD_VERSION=1.6.0
 RUN pip3 install git+https://github.com/ohmu/pghoard.git@${PGHOARD_VERSION}
 
 RUN pip3 install google-api-python-client 'oauth2client<4'
